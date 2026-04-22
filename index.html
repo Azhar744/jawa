@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JAWA RESTAURANT</title>
+
+<style>
+body{margin:0;font-family:'Segoe UI';background:#111;color:white;}
+
+header{
+background:linear-gradient(45deg,#ffcc00,#ff0000);
+padding:12px;text-align:center;font-weight:bold;
+}
+
+/* SLIDER */
+.slider-container{margin:10px;overflow:hidden;border-radius:15px;}
+.slider{display:flex;transition:0.5s;}
+.slide{flex:0 0 100%;}
+.slide img{width:100%;height:180px;object-fit:contain;}
+@media(min-width:768px){.slide{flex:0 0 50%;}}
+@media(min-width:1024px){.slide{flex:0 0 25%;}}
+
+/* TEXT */
+.info{text-align:center;color:#ffcc00;margin-top:5px;}
+.title{text-align:center;margin:15px;font-size:20px;color:#ffcc00;}
+
+/* SECTION */
+.section{margin-bottom:15px;}
+.section-title{padding:10px;color:#ffcc00;font-weight:bold;}
+
+/* FILTER */
+.filters{display:flex;gap:5px;padding:10px;overflow-x:auto;}
+.filters button{background:#333;color:white;border:none;padding:6px 10px;border-radius:20px;}
+.filters .active{background:red;}
+
+/* SCROLL */
+.menu-scroll{max-height:280px;overflow-y:auto;padding:10px;}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+@media(min-width:768px){.grid{grid-template-columns:repeat(4,1fr);}}
+@media(min-width:1024px){.grid{grid-template-columns:repeat(6,1fr);}}
+
+/* CARD */
+.card{background:#1c1c1c;border-radius:10px;overflow:hidden;}
+.img-box{position:relative;}
+.img-box img{width:100%;height:100px;object-fit:contain;}
+.overlay{position:absolute;bottom:0;width:100%;background:rgba(0,0,0,0.6);font-size:11px;text-align:center;padding:3px;}
+
+/* QTY */
+.qty{display:flex;justify-content:center;gap:5px;padding:5px;flex-wrap:wrap;}
+.qty button{background:red;color:white;border:none;padding:3px 6px;border-radius:5px;}
+.qty select{padding:3px;border-radius:5px;}
+
+/* CART */
+.cart{background:#1c1c1c;margin:10px;padding:10px;border-radius:10px;}
+.order-row{display:flex;flex-direction:column;gap:8px;}
+@media(min-width:600px){.order-row{flex-direction:row;}}
+select,button{padding:10px;border:none;border-radius:5px;}
+.order-btn{background:#25D366;color:white;}
+
+/* REVIEWS */
+.reviews{padding:15px;}
+.review-title{text-align:center;color:#ffcc00;font-size:20px;}
+.review-grid{display:grid;gap:10px;}
+@media(min-width:768px){.review-grid{grid-template-columns:repeat(2,1fr);}}
+@media(min-width:1024px){.review-grid{grid-template-columns:repeat(3,1fr);}}
+.review{background:#1c1c1c;padding:10px;border-radius:10px;}
+
+/* FOOTER */
+.footer{text-align:center;padding:20px;background:#000;color:#ffcc00;margin-top:20px;}
+
+.top-cart{
+position:sticky;
+top:0;
+z-index:999;
+background:#000;
+color:#ffcc00;
+text-align:center;
+padding:8px;
+font-size:14px;
+border-bottom:1px solid #333;
+display:none; /* start hidden */
+}
+</style>
+</head>
+
+<body>
+
+<header>🍽 JAWA RESTAURANT & KARAHI</header>
+
+<div id="topCart" class="top-cart">
+🛒 <span id="itemCount">0</span> Items | Rs.<span id="topTotal">0</span>  
+<br><small>Scroll down to place order ⬇</small>
+</div>
+
+<!-- SLIDER -->
+<div class="slider-container">
+<div class="slider" id="slider">
+<div class="slide"><img src="slider1.png"></div>
+<div class="slide"><img src="slider2.png"></div>
+<div class="slide"><img src="slider3.png"></div>
+<div class="slide"><img src="slider4.png"></div>
+</div>
+</div>
+
+<div class="info">⏰ 12 PM – 2 AM | 🚚 Home Delivery  |  0304-1113338 </div>
+<div class="title">✨ Our Proud Menu</div>
+
+<!-- KARAHI -->
+<div class="section">
+<div class="section-title">KARAHI GOSHT</div>
+<div class="filters">
+<button onclick="filterKarahi('chicken',event)" class="active">Chicken</button>
+<button onclick="filterKarahi('mutton',event)">Mutton</button>
+<button onclick="filterKarahi('desi',event)">Desi Murgh</button>
+<button onclick="filterKarahi('batair',event)">Batair</button>
+</div>
+<div class="menu-scroll"><div class="grid" id="karahi"></div></div>
+</div>
+
+<!-- BBQ -->
+<div class="section">
+<div class="section-title">BBQ</div>
+<div class="menu-scroll"><div class="grid" id="bbq"></div></div>
+</div>
+
+<!-- BONELESS -->
+<div class="section">
+<div class="section-title">BONELESS HANDI</div>
+<div class="menu-scroll"><div class="grid" id="boneless"></div></div>
+</div>
+
+<!-- TANDOOR -->
+<div class="section">
+<div class="section-title">TANDOOR & DRINKS</div>
+<div class="menu-scroll"><div class="grid" id="tandoor"></div></div>
+</div>
+
+<!-- CART -->
+<div class="cart">
+<h3>🛒 Order</h3>
+<div id="cart"></div>
+<h3>Total: Rs.<span id="total">0</span></h3>
+
+<div class="order-row">
+<select id="branch">
+<option value="">Select Branch</option>
+<option value="923211118335">Iqbal Town</option>
+<option value="923001112222">Muslim Town</option>
+<option value="923001111222">Shahdarra</option>
+</select>
+
+<button class="order-btn" onclick="order()">WhatsApp</button>
+</div>
+</div>
+
+<!-- REVIEWS -->
+<div class="reviews">
+<div class="review-title">⭐ Customer Reviews</div>
+<div class="review-grid">
+<div class="review">⭐⭐⭐⭐⭐ Amazing taste!</div>
+<div class="review">⭐⭐⭐⭐⭐ Fast delivery 👍</div>
+<div class="review">⭐⭐⭐⭐⭐ Highly recommended ❤️</div>
+</div>
+</div>
+
+<footer class="footer">
+🍽 JAWA RESTAURANT <br>Serving Taste Since 1980 ❤️
+</footer>
+
+<script>
+
+/* SLIDER */
+let slider=document.getElementById("slider");
+let slides=document.querySelectorAll(".slide");
+let index=0;
+function getVisible(){
+if(window.innerWidth>=1024)return 4;
+if(window.innerWidth>=768)return 2;
+return 1;
+}
+setInterval(()=>{
+let visible=getVisible();
+let max=slides.length-visible;
+index++;
+if(index>max)index=0;
+slider.style.transform=`translateX(-${index*(100/visible)}%)`;
+},3000);
+
+/* KARAHI */
+let karahiData={
+chicken:[
+["Desi Half Chicken Karahi",1545,"dhc.jpeg"],
+["Sufi Half Chicken Karahi",1195,"shc.jpeg"],
+["Desi Full Chicken Karahi",2990,"dfc.jpeg"],
+["Sufi Full Chicken Karahi",2290,"sfc.jpeg"],
+["Desi Half Chicken White Karahi",1645,"dhcwk.jpeg"],
+["Sufi Half Chicken White Karahi",1295,"shcwk.jpeg"],
+["Desi Full Chicken White Karahi",3190,"dfcwk.jpeg"],
+["Sufi Full Chicken White Karahi",2490,"sfcwk.jpeg"],
+["Desi Half Chicken Achari Karahi",1595,"dhcak.jpeg"],
+["Sufi Half Chicken Achari Karahi",1245,"shcak.jpeg"],
+["Desi Full Chicken Achari Karahi",3090,"dfcak.jpeg"],
+["Sufi Full Chicken Achari Karahi",2390,"sfcak.jpeg"],
+["Chicken piece",490,"cpiece.jpeg"], 
+],
+mutton:[
+["Desi Half Mutton Karahi",2545,"dhm.jpeg"],
+["Sufi Half Mutton Karahi",2395,"shm.jpeg"],
+["Desi Full Mutton Karahi",4990,"dfm.jpeg"],
+["Sufi Full Mutton Karahi",4690,"sfm.jpeg"],
+["Desi Half Mutton White Karahi",2645,"dhmwk.jpeg"],
+["Sufi Half Mutton White Karahi",2490,"shmwk.jpeg"],
+["Desi Full Mutton White Karahi",5190,"dfmwk.jpeg"],
+["Sufi Full Mutton White Karahi",4890,"sfmwk.jpeg"],
+["Desi Half Mutton Achari Karahi",2595,"dhmak.jpeg"],
+["Sufi Half Mutton Achari Karahi",2445,"shmak.jpeg"],
+["Desi Full Mutton Achari Karahi",5090,"dfmak.jpeg"],
+["Sufi Full Mutton Achari Karahi",4790,"sfmak.jpeg"],
+["Desi Mutton Qeema Karahi",1850,"dqeema.jpeg"],
+["Sufi Mutton Qeema Karahi",1440,"sqeema.jpeg"] 
+],
+desi:[
+["Half Murgha Karahi",2195,"hm.jpeg"],
+["Full Murgha Karahi",4290,"fm.jpeg"] 
+],
+batair:[
+["Single Batair Karahi",1290,"sb.jpeg"]
+]
+};
+
+function create(name,price,img){
+let id=name.replace(/\s/g,'');
+return `
+<div class="card">
+<div class="img-box">
+<img src="${img}">
+<div class="overlay">${name}<br>Rs.${price}</div>
+</div>
+<div class="qty">
+<button onclick="update('${id}','${name}',${price},-1)">-</button>
+<span id="${id}">0</span>
+<button onclick="update('${id}','${name}',${price},1)">+</button>
+</div>
+</div>`;
+}
+
+function filterKarahi(type,e){
+if(e){
+document.querySelectorAll(".filters button").forEach(b=>b.classList.remove("active"));
+e.target.classList.add("active");
+}
+let html="";
+karahiData[type].forEach(i=>html+=create(i[0],i[1],i[2]));
+document.getElementById("karahi").innerHTML=html;
+}
+filterKarahi("chicken");
+
+/* ================= BBQ DATA ================= */
+
+let bbqItems=[
+["Chicken Tikka Boti",1790,"tikka.jpeg"],
+["Chicken Malai Boti",2490,"malaiboti.jpeg"],
+["Chicken Hari Boti",2590,"hariboti.jpeg"],
+["Reshmi/Seekh Kabab",2090,"reshmi.jpeg"],
+["Chicken Kabab",1990,"ckabab.jpeg"],
+["Beef Kabab",1790,"bkabab.jpeg"],
+["Chicken Cheese Boti",2690,"cheeseboti.jpeg"],
+["Chicken Kastori Boti",2690,"kastoriboti.jpeg"],
+["Gola Kabab",1990,"gkabab.jpeg"]
+];
+
+let bbqState={};
+
+/* ================= CREATE CARD ================= */
+
+function createBBQ(name,price,img){
+
+let id = name.replace(/[^a-zA-Z0-9]/g,'');
+
+return `
+<div class="card">
+
+  <div class="img-box">
+    <img src="${img}">
+    <div class="overlay">
+      ${name}<br>
+      Rs.<span id="price-${id}">${price/2}</span>
+    </div>
+  </div>
+
+  <div class="qty">
+
+    <select onchange="changeBBQ('${id}',${price},this.value)">
+      <option value="0.25">0.25 KG</option>
+      <option value="0.5" selected>0.5 KG</option>
+      <option value="1">1 KG</option>
+      <option value="1.25">1.25 KG</option>
+    </select>
+
+    <button onclick="updateBBQ('${id}','${name}',-1)">-</button>
+    <span id="${id}">0</span>
+    <button onclick="updateBBQ('${id}','${name}',1)">+</button>
+
+  </div>
+
+</div>
+`;
+}
+
+/* ================= LOAD BBQ ================= */
+
+function loadBBQ(){
+
+let html="";
+
+bbqItems.forEach(i=>{
+
+let id = i[0].replace(/[^a-zA-Z0-9]/g,'');
+
+html += createBBQ(i[0],i[1],i[2]);
+
+bbqState[id]={
+qty:0,
+kg:0.5,
+price:i[1]
+};
+
+});
+
+document.getElementById("bbq").innerHTML=html;
+}
+
+/* ================= CHANGE KG ================= */
+
+function changeBBQ(id,price,kg){
+
+bbqState[id].kg = parseFloat(kg);
+
+let newPrice = price * kg;
+
+document.getElementById("price-"+id).innerText = newPrice;
+}
+
+/* ================= UPDATE CART ================= */
+
+function updateBBQ(id,name,change){
+
+let el = document.getElementById(id);
+let q = parseInt(el.innerText);
+
+q += change;
+if(q < 0) q = 0;
+
+el.innerText = q;
+
+let item = bbqState[id];
+
+cart[name] = {
+qty: q,
+price: item.price * item.kg
+};
+
+render();
+}
+
+/* ================= INIT ================= */
+
+loadBBQ();
+/* OTHER */
+let data={
+boneless:[["Chicken Half Boneless Handi",1195,"chbh.jpeg"],
+["Chicken Full Boneless Handi",2290,"cfbh.jpeg"],
+["Chicken Half Achari Handi",1195,"chah.jpeg"],
+["Chicken Full Achari Handi",2290,"cfah.jpeg"],
+["Chicken Half Madarasi Handi",1225,"chmh.jpeg"],
+["Chicken Full Madarasi Handi",2350,"cfmh.jpeg"],
+["Chicken Half Bombay Handi",1245,"chbomh.jpeg"],
+["Chicken Full Bombay Handi",2390,"cfbomh.jpeg"],
+["Chicken Jalfrezi Handi",1490,"cjh.jpeg"],
+["Chicken Ginger Handi",1395,"cgh.jpeg"] 
+],
+tandoor:[["Roti",20,"roti.jpeg"],
+["Naan",30,"naan.jpeg"],
+["Rogni Naan",95,"rnaan.jpeg"],
+["Garlic Naan",95,"gnaan.jpeg"],
+["Allu Naan",95,"anaan.jpeg"],
+["Kalwanji Naan",95,"knaan.jpeg"],
+["Qeema Naan",190,"qnaan.jpeg"],
+["Chicken Naan",190,"cnaan.jpeg"],
+["Cold Drink Half ltr",130,"hl.jpeg"],
+["Cold Drink 1 ltr",160,"1l.jpeg"],
+["Cold Drink 1.5 ltr",220,"1.5l.jpeg"],
+["Cold Drink 2.25 ltr",280,"2.25l.jpeg"],
+["Mint Raita",180,"mraita.jpeg"],
+["Fresh Salad",160,"fsalad.jpeg"],
+["Kachumar Salad",210,"ksalad.jpeg"],
+["Zeera Raita",170,"zraita.jpeg"]
+]
+};
+
+for(let s in data){
+let html="";
+data[s].forEach(i=>html+=create(i[0],i[1],i[2]));
+document.getElementById(s).innerHTML=html;
+}
+
+/* CART */
+let cart={};
+
+function update(id,name,price,change){
+let el=document.getElementById(id);
+let q=parseInt(el.innerText)+change;
+if(q<0)q=0;
+el.innerText=q;
+cart[name]={qty:q,price};
+render();
+}
+
+function render(){
+let html="",total=0;
+for(let i in cart){
+if(cart[i].qty>0){
+let t=cart[i].qty*cart[i].price;
+total+=t;
+html+=`<div>${i} (${cart[i].qty}) = Rs.${t}</div>`;
+}
+}
+document.getElementById("cart").innerHTML=html;
+document.getElementById("total").innerText=total;
+}
+
+function order(){
+let phone=document.getElementById("branch").value;
+if(phone===""){alert("Select branch");return;}
+
+let msg="Order:%0A";
+for(let i in cart){
+if(cart[i].qty>0){
+msg+=`${i} (${cart[i].qty})%0A`;
+}
+}
+msg+=`Total: Rs.${document.getElementById("total").innerText}`;
+window.open(`https://wa.me/${phone}?text=${msg}`);
+}
+
+
+function render(){
+let html="",total=0,itemCount=0;
+
+for(let i in cart){
+if(cart[i].qty>0){
+
+let t=cart[i].qty*cart[i].price;
+total+=t;
+itemCount+=cart[i].qty;
+
+html+=`<div>${i} (${cart[i].qty}) = Rs.${t}</div>`;
+}
+}
+
+document.getElementById("cart").innerHTML=html;
+document.getElementById("total").innerText=total;
+
+/* TOP CART UPDATE */
+let topCart=document.getElementById("topCart");
+
+if(itemCount>0){
+topCart.style.display="block";
+document.getElementById("itemCount").innerText=itemCount;
+document.getElementById("topTotal").innerText=total;
+}else{
+topCart.style.display="none";
+}
+}
+</script>
+
+</body>
+</html>
